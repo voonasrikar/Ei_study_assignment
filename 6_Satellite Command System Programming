@@ -1,0 +1,30 @@
+class PersonalWeatherStation:
+    def __init__(self):
+        self.wind_direction = "North"
+        self.sensor_status = "Inactive"
+        self.weather_data_collected = 0
+
+    def set_wind_direction(self, new_direction):
+        valid_directions = ["North", "South", "East", "West"]
+        self.wind_direction = new_direction if new_direction in valid_directions else self.wind_direction
+
+    def toggle_sensor(self):
+        self.sensor_status = "Active" if self.sensor_status == "Inactive" else "Inactive"
+
+    def collect_weather_data(self):
+        self.weather_data_collected += 5 if self.sensor_status == "Active" else 0
+
+
+# Example usage:
+if __name__ == "__main__":
+    personal_weather_station = PersonalWeatherStation()
+
+    # Execute commands
+    personal_weather_station.set_wind_direction("West")
+    personal_weather_station.toggle_sensor()
+    personal_weather_station.collect_weather_data()
+
+    # Display final state
+    print(f'Wind Direction: "{personal_weather_station.wind_direction}"\n'
+          f'Sensor Status: "{personal_weather_station.sensor_status}"\n'
+          f'Weather Data Collected: {personal_weather_station.weather_data_collected}')
