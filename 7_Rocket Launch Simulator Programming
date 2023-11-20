@@ -1,0 +1,66 @@
+import time
+
+class Rocket:
+    def __init__(self):
+        self.stage = "Pre-Launch"
+        self.fuel = 100
+        self.altitude = 0
+        self.speed = 0
+
+    def start_checks(self):
+        print("Performing pre-launch checks...")
+        print("All systems are 'Go' for launch.")
+
+    def launch(self):
+        if self.stage != "Pre-Launch":
+            print("Rocket already launched or in progress.")
+            return
+        print("Initiating launch sequence!")
+        self.stage = "Stage 1"
+        while self.stage != "Orbit":
+            self.update()
+            time.sleep(1)
+
+    def update(self):
+        if self.stage == "Orbit":
+            return
+        self.altitude += self.speed
+        self.fuel -= 10
+        self.speed += 100
+        print("Stage:", self.stage, "Fuel:", self.fuel, "%, Altitude:", self.altitude, "km, Speed:", self.speed, "km/h")
+        if self.fuel <= 0:
+            self.mission_failure("Mission Failed due to insufficient fuel.")
+            return
+        if self.altitude >= 200:
+            self.stage = "Stage 2"
+            print("Stage 1 complete. Separating stage. Entering Stage 2.")
+            if self.stage == "Stage 2":
+                self.stage = "Orbit"
+                print("Orbit achieved! Mission Successful.")
+
+    def fast_forward(self, seconds):
+        if self.stage == "Pre-Launch":
+            print("Rocket not launched yet.")
+            return
+        for i in range(seconds):
+            self.update()
+            time.sleep(1)
+
+    def mission_failure(self, message):
+        print(message)
+        self.stage = "Mission Failed"
+
+rocket = Rocket()
+while True:
+    command = input("Enter a command: ")
+    if command == "Pre-Launch Checks":
+        rocket.start_checks()
+    elif command == "launch":
+        rocket.launch()
+    elif command == "fast_forward":
+        seconds = int(input())
+        rocket.fast_forward(seconds)
+    else:
+        print("Invalid command. Available commands: start_checks, launch, fast_forward X")
+
+
