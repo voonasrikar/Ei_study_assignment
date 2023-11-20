@@ -1,0 +1,128 @@
+from datetime import datetime
+
+class TaskSnapshot:
+    def __init__(self, tasks):
+        self.tasks = tasks
+
+class CustomTask:
+    def __init__(self, description):
+        self.description = description
+        self.completed = False
+        self.deadline = None
+
+    def mark_done(self):
+        self.completed = True
+
+    def mark_pending(self):
+        self.completed = False
+
+    def set_due_date(self, due_date):
+        self.deadline = datetime.strptime(due_date, '%Y-%m-%d')
+
+class TaskBuilder:
+    def __init__(self, description):
+        self.task = CustomTask(description)
+
+    def set_due_date(self, due_date):
+        self.task.set_due_date(due_date)
+        return self
+
+    def build(self):
+        return self.task
+
+class TaskManager:
+    def __init__(self):
+        self.tasks = []
+        self.snapshots = []
+
+    def add_custom_task(self, task):
+        self.tasks.append(task)
+        self.save_snapshot()
+
+    def remove_custom_task(self, description):
+        for task in self.tasks:
+            if task.description == description:
+                self.tasks.remove(task)
+                self.save_snapshot()
+                break
+
+    def complete_custom_task(self, description):
+        for task in self.tasks:
+            if task.description == description:
+                task.mark_done()
+                self.save_snapshot()
+                break
+
+    def view_custom_tasks(self, filter_option='all'):
+        if filter_option == 'completed':
+            filtered_tasks = [task for task in self.tasks if task.completed]
+        elif filter_option == 'pending':
+            filtered_tasks = [task for task in self.tasks if not task.completed]
+        else:
+            filtered_tasks = self.tasks
+        return filtered_tasks
+
+    def save_snapshot(self):
+        self.snapshots.append(TaskSnapshot([task.__dict__ for task in self.tasks]))
+
+    def undo(self):
+        if len(self.snapshots) > 1:
+            self.snapshots.pop()
+            self.tasks = [CustomTask(**state) for state in self.snapshots[-1].tasks]
+        else:
+            print("Can't undo further.")
+
+    def redo(self):
+        if len(self.snapshots) < 2:
+            print("No redo available.")
+        else:
+            self.tasks = [CustomTask(**state) for state in self.snapshots.pop().tasks]
+
+def display_custom_tasks(tasks):
+    for task in tasks:
+        completion_status = 'Completed' if task.completed else 'Pending'
+        deadline_info = f", Deadline: {task.deadline}" if task.deadline else ""
+        print(f"{task.description} - {completion_status}{deadline_info}")
+
+task_manager = TaskManager()
+
+while True:
+    print("Choose an option:")
+    print("1. Add a task")
+    print("2. Mark a task as completed")
+    print("3. View tasks")
+    print("4. Undo")
+    print("5. Redo")
+    print("6. Exit")
+
+    choice = input("Enter your choice: ")
+
+    if choice == '1':
+        description = input("Enter task description: ")
+        task_builder = TaskBuilder(description)
+        deadline = input("Enter deadline (YYYY-MM-DD): ")
+        task_builder.set_due_date(deadline)
+        task = task_builder.build()
+        task_manager.add_custom_task(task)
+
+    elif choice == '2':
+        description = input("Enter task description to mark as completed: ")
+        task_manager.complete_custom_task(description)
+
+    elif choice == '3':
+        filter_option = input("Enter filter option ('all', 'completed', 'pending'): ")
+        tasks = task_manager.view_custom_tasks(filter_option)
+        display_custom_tasks(tasks)
+
+    elif choice == '4':
+        task_manager.undo()
+
+    elif choice == '5':
+        task_manager.redo()
+
+    elif choice == '6':
+        print("Exiting...")
+        break
+
+    else:
+        print("Invalid choice. Please choose again.")
