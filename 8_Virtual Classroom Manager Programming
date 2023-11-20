@@ -1,0 +1,56 @@
+class Classroom:
+    def __init__(self, name):
+        self.class_name = name
+        self.students = []
+        self.assignments = []
+
+    def addStudent(self, studentId):
+        self.students.append(studentId)
+
+    def listStudents(self):
+        print("Students in", self.class_name + ":")
+        for student in self.students:
+            print("Student ID:", student)
+
+    def scheduleAssignment(self, assignmentDetails):
+        self.assignments.append(assignmentDetails)
+
+    def listAssignments(self):
+        print("Assignments for", self.class_name + ":")
+        for assignment in self.assignments:
+            print("Assignment Details:", assignment)
+
+
+class Manager:
+    def __init__(self):
+        self.classrooms = {}
+
+    def addClassroom(self, className):
+        self.classrooms[className] = Classroom(className)
+        print("Classroom", className, "has been created.")
+
+    def addStudent(self, studentId, className):
+        if className in self.classrooms:
+            self.classrooms[className].addStudent(studentId)
+            print("Student", studentId, "has been enrolled in", className + ".")
+        else:
+            print("Classroom", className, "does not exist.")
+
+    def scheduleAssignment(self, className, assignmentDetails):
+        if className in self.classrooms:
+            self.classrooms[className].scheduleAssignment(assignmentDetails)
+            print("Assignment for", className, "has been scheduled.")
+        else:
+            print("Classroom", className, "does not exist.")
+
+    def submitAssignment(self, studentId, className, assignmentDetails):
+        print("Assignment submitted by Student", studentId, "in", className + ".")
+
+
+manager = Manager()
+manager.addClassroom("Maths")
+manager.addStudent("S001", "Math")
+manager.scheduleAssignment("Math", "Math_Assignment 1")
+manager.submitAssignment("S001", "Math", "Math_Assignment 1")
+
+
